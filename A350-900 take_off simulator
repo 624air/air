@@ -58,7 +58,6 @@ V_stall = (2*Weight / (p*S*CL)) ** 0.5
 wind_V = float(input('바람의 풍속(m/s) :'))
 angle = math.radians(float(input('바람의 방향(0도, 360도 사이):' )))
 V_wind = wind_V * math.cos(angle) 
-print(V_wind)
 Crosswind = abs(wind_V * math.sin(angle))
 if runway_condition == 'dry' and Crosswind > 17 :
   print('이륙 금지! 측풍이 너무 강합니다!')
