@@ -57,7 +57,8 @@ CD = CD0 + k * (CL)**2
 V_stall = (2*Weight / (p*S*CL)) ** 0.5
 wind_V = float(input('바람의 풍속(m/s) :'))
 angle = math.radians(float(input('바람의 방향(0도, 360도 사이):' )))
-V_wind = -wind_V * math.cos(angle) #순풍 :(+), 역풍 :(-)
+V_wind = wind_V * math.cos(angle) 
+print(V_wind)
 Crosswind = abs(wind_V * math.sin(angle))
 if runway_condition == 'dry' and Crosswind > 17 :
   print('이륙 금지! 측풍이 너무 강합니다!')
@@ -68,7 +69,7 @@ elif runway_condition == 'Icy' and Crosswind > 5 :
 else :
   V=0
   V_ground = V
-  V_air = V - V_wind
+  V_air = V + V_wind
   t=0
   dt=0.0001
   while True :
@@ -76,7 +77,7 @@ else :
     a = (2*(Thrust-Weight*runway_u) - p*S*((V_air)**2)*(CD-runway_u*CL))/(2*Mass)
     V += a * dt
     V_ground = V
-    V_air = V - V_wind
+    V_air = V + V_wind
     Reverse_Thrust = Thrust * 0.35 # 역추진은 엔진의 0.35배의 출력
     Lift = 0.5 * p * S * CL *(V_air**2)
     F_rolling = runway_u *(Weight - Lift)
