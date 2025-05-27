@@ -70,9 +70,8 @@ else :
   V_ground = V
   V_air = V + V_wind
   t=0
-  dt=0.0001
+  dt=0.01
   while True :
-    t += dt
     a = (2*(Thrust-Weight*runway_u) - p*S*((V_air)**2)*(CD-runway_u*CL))/(2*Mass)
     V += a * dt
     V_ground = V
@@ -82,12 +81,12 @@ else :
     F_rolling = runway_u *(Weight - Lift)
     Drag = 0.5 * p * S * CD * (V_air**2)
     F_break = break_u * (Weight - Lift)
-    if (2*Thrust-2*runway_u*Weight-p*S*(CD-runway_u*CL)*(V_air**2)) > 0 :
-      len1 = abs((Mass/(p*S*(CD-runway_u*CL))) * math.log((2*Thrust - 2*runway_u*Weight)/(2*Thrust-2*runway_u*Weight-p*S*(CD-runway_u*CL)*(V_air**2))))
+    if (2*Thrust-2*runway_u*Weight-p*S*(CD-runway_u*CL)*(V**2)) > 0 :
+      len1 = abs((Mass/(p*S*(CD-runway_u*CL))) * math.log((2*Thrust - 2*runway_u*Weight)/(2*Thrust-2*runway_u*Weight-p*S*(CD-runway_u*CL)*(V**2))))
     else :
       continue
-    if (2*(runway_u+break_u)*Weight+2*Reverse_Thrust)/(p*S*(CD-(runway_u+break_u)*CL)*(V_air**2)+2*(runway_u+break_u)*Weight+2*Reverse_Thrust) > 0 :
-      len2 = abs((Mass/(p*S*(CD-(runway_u+break_u)*CL))) * math.log((2*(runway_u+break_u)*Weight+2*Reverse_Thrust)/(p*S*(CD-(runway_u+break_u)*CL)*(V_air**2)+2*(runway_u+break_u)*Weight+2*Reverse_Thrust)))
+    if (2*(runway_u+break_u)*Weight+2*Reverse_Thrust)/(p*S*(CD-(runway_u+break_u)*CL)*(V**2)+2*(runway_u+break_u)*Weight+2*Reverse_Thrust) > 0 :
+      len2 = abs((Mass/(p*S*(CD-(runway_u+break_u)*CL))) * math.log((2*(runway_u+break_u)*Weight+2*Reverse_Thrust)/(p*S*(CD-(runway_u+break_u)*CL)*(V**2)+2*(runway_u+break_u)*Weight+2*Reverse_Thrust)))
     else :
       continue
     if len1 + len2 > TORA :
@@ -106,7 +105,7 @@ else :
     Drag = 0.5 * p * S * CD * (V_air**2)
     F_break = break_u * (Weight - Lift)
     T_net = Thrust-Drag-runway_u*(Weight - Lift)
-    STO = abs((Mass/(p*S*(CD-runway_u*CL))) * math.log(2*(Thrust - runway_u*Weight)/(2*Thrust-2*runway_u*Weight-p*S*(CD-runway_u*CL)*(V_air**2))))
+    STO = abs((Mass/(p*S*(CD-runway_u*CL))) * math.log(2*(Thrust - runway_u*Weight)/(2*Thrust-2*runway_u*Weight-p*S*(CD-runway_u*CL)*(V**2))))
     if T_net < 0 :
         print('위험! 순추력이 부족합니다! 이륙 불가!')
         print('TIP :날개 면적, 공항 상태 등을 바꾸어보세요.')
@@ -115,7 +114,7 @@ else :
       print('이탈 거리 : {:.3f}m'.format(STO - TORA))
       print('현재속도 : {:.3f}kn'.format(V*3.6/1.852))
       break
-    elif V_air >= 1.25*V_stall:
+    elif V_air>= V_stall*1.25 :
       print('이륙 예정 공항 : {}'.format(airports[airport_select]['name']))
       print('활주로 길이 : {}m'.format(TORA))
       print(f'항공기 기종 : Airbus350-900')
