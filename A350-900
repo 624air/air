@@ -129,6 +129,3 @@ else :
       else :
         print('안전한 이륙 가능!')
       break
-    F_rolling = runway_u *(Weight - Lift)
-    Drag = 0.5 * p * S * CD * (V_air**2)
-    F_break = break_u * (Weight - L)
