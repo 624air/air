@@ -1,5 +1,4 @@
 import math
-# 출처 : TYPE-CERTIFICATE DATA SHEET, A350(EASA)
 while True :
   Mass = float(input('항공기 중량(ton) :'))
   Mass = Mass * 1000
@@ -46,7 +45,7 @@ break_condition = {'dry' : 0.6,
 runway_condition = input('활주로 상태 설정(dry,wet,snow-Covered,Icy) :')
 runway_u = condition[runway_condition]
 break_u = break_condition[runway_condition]
-S = 443.0  #출처 : EASA Type Certificate Data Sheet (EASA.E.111)
+S = 443.0  
 flap = 15
 CL_max = 2.3
 CL = CL_max * 0.9
@@ -55,9 +54,9 @@ pi = 3.14
 k = 1/(pi*0.8*9.0)
 CD = CD0 + k * (CL)**2
 V_stall = (2*Weight / (p*S*CL)) ** 0.5
-wind_V = float(input('바람의 풍속(m/s) :'))
+wind_V = float(input('바람의 풍속(m/s), 0.7m/s이상 :')) #바람의 풍속이 너무 작으면 영향을 주지 않으므로 무시
 angle = math.radians(float(input('바람의 방향(0도, 360도 사이):' )))
-V_wind = wind_V * math.cos(angle) 
+V_wind = wind_V * math.cos(angle)
 Crosswind = abs(wind_V * math.sin(angle))
 if runway_condition == 'dry' and Crosswind > 17 :
   print('이륙 금지! 측풍이 너무 강합니다!')
@@ -118,7 +117,7 @@ else :
       print('이륙 예정 공항 : {}'.format(airports[airport_select]['name']))
       print('활주로 길이 : {}m'.format(TORA))
       print(f'항공기 기종 : Airbus350-900')
-      print('현재 속도 : {:.3f}kn'.format(V*3.6/1.852))     
+      print('현재 속도 : {:.3f}kn'.format(V*3.6/1.852))
       print(f'예상 활주 거리 : {STO:.3f}m')
       print(f'예상 활주 거리(오차 요인 고려) : {STO*1.15:.3f}m') # 안전 마진 계수 1.15를 곱함(15%여유)
       if STO > TORA :
