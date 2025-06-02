@@ -23,7 +23,6 @@ def delete_all():
 altitude_display = turtle.Turtle()
 altitude_display.hideturtle()
 altitude_display.penup()
-altitude_display.showturtle()
 altitude_display.goto(450, -370)
 altitude = 36000
 altitude_display.write("Altitude = 36000ft", align = 'center', font=('Arial', 20, 'bold'))
@@ -136,7 +135,6 @@ def other_move() :
         notice_altitude.write("36000ft", align = 'center', font=('Arial', 13, 'bold'))
     d = math.sqrt(now_x**2 + (now_y+100)**2)
     other_aircraft.clear()
-    other_aircraft.write(str(d), align = 'center', font=('Arial', 13, 'bold'))
     if 100< d <= 150  :
         alert_active = True
         other_aircraft.shapesize(2)
@@ -145,6 +143,7 @@ def other_move() :
         alarm.write("Traffic", align = 'center', font=('Arial', 45, 'bold'))
     elif 10< d <= 100  :
         alert_active = True
+        screen.bgcolor('orange')
         other_aircraft.shapesize(2)
         other_aircraft.color("black","red")
         other_aircraft.shape("square")
