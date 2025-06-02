@@ -1,0 +1,79 @@
+import turtle
+import math
+import random
+screen = turtle.Screen()
+screen.setup(1000, 800)
+screen.bgcolor('light steel blue')
+screen.title("TCAS 레이더")
+
+draw = turtle.Turtle()
+draw.hideturtle()
+draw.pensize(3)
+draw.speed(1000)
+draw.penup()
+draw.goto(0,-250)
+for i in range(12) :
+    draw.pendown()
+    draw.circle(150,15)
+    draw.penup()
+    draw.circle(150,15)
+draw.goto(0,-210)
+draw.pensize(10)
+for i in range(12) :
+    draw.pendown()
+    draw.circle(110,0.1)
+    draw.penup()
+    draw.circle(110,29.9)
+
+draw.penup()
+draw.goto(0,-350)
+draw.pendown()
+for i in range(30) :
+    draw.pendown()
+    draw.circle(350,1)
+    draw.penup()
+    draw.circle(350,11)
+my_aircraft = turtle.Turtle()
+my_aircraft.penup()
+my_aircraft.goto(0,-100)
+my_aircraft.setheading(90)
+my_aircraft.shapesize(6)
+
+angle = random.randint(32,148)
+angle_rad = math.radians(angle)
+x = 525*math.cos(angle_rad)
+y = 525*math.sin(angle_rad)- 100
+other_aircraft = turtle.Turtle()
+other_aircraft.penup()
+other_aircraft.hideturtle()
+other_aircraft.goto(x,y)
+other_aircraft.setheading(angle+180)
+other_aircraft.shape('triangle')
+other_aircraft.showturtle()
+
+k = random.randint(1,2)
+alarm = turtle.Turtle()
+alarm.hideturtle()
+alarm.penup()
+alarm.goto(0,-415)
+for i in range(840) :
+    other_aircraft.forward(0.625)
+    now_x = other_aircraft.xcor()
+    now_y = other_aircraft.ycor()
+    d = math.sqrt(now_x**2 + (now_y+100)**2)
+    if 100< d <= 150  :
+        other_aircraft.shapesize(2)
+        other_aircraft.color("yellow")
+        alarm.color('yellow')
+        alarm.write("Traffic", align = 'center', font=('Arial', 45, 'bold'))
+    if d <= 100  :
+        other_aircraft.shapesize(2)
+        other_aircraft.color("red")
+        other_aircraft.shape("square")
+        alarm.clear()
+        alarm.color('red')
+        if k ==1 :
+            alarm.write("Climb", align = 'center', font=('Arial', 45, 'bold'))
+        else :
+            alarm.write("Descend", align = 'center', font=('Arial', 45, 'bold'))
+turtle.done()
