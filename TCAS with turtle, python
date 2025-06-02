@@ -6,6 +6,70 @@ screen.setup(1000, 800)
 screen.bgcolor('light steel blue')
 screen.title("TCAS 레이더")
 
+def delete_all():
+    altitude_display.clear()
+    my_aircraft.clear()
+    alarm.clear()
+    draw.clear()
+    notice_altitude.clear()
+    other_aircraft.clear()
+    altitude_display.hideturtle()
+    my_aircraft.hideturtle()
+    alarm.hideturtle()
+    draw.hideturtle()
+    notice_altitude.hideturtle()
+    other_aircraft.hideturtle()
+
+altitude_display = turtle.Turtle()
+altitude_display.hideturtle()
+altitude_display.penup()
+altitude_display.showturtle()
+altitude_display.goto(450, -370)
+altitude = 36000
+altitude_display.write("Altitude = 36000ft", align = 'center', font=('Arial', 20, 'bold'))
+alert_active = False
+up = False
+down = False
+def climb() :
+    global altitude
+    if alert_active and up:
+        altitude += 30
+    altitude_display.clear()
+    altitude_display.write(f"Altitude: {altitude} ft", align="center", font=("Arial", 16, "bold"))
+    screen.ontimer(climb, 100)
+
+def descend() :
+    global altitude
+    if alert_active and down:
+        altitude -= 30
+    altitude_display.clear()
+    altitude_display.write(f"Altitude: {altitude} ft", align="center", font=("Arial", 16, "bold"))
+    screen.ontimer(descend, 100)
+
+def start_climb():
+    global up
+    up = True
+
+def stop_climb():
+    global up
+    up = False
+
+def start_descend():
+    global down
+    down = True
+
+def stop_descend():
+    global down
+    down = False
+
+screen.listen()
+screen.onkeypress(start_climb, 'w')
+screen.onkeyrelease(stop_climb, 'w')
+
+screen.listen()
+screen.onkeypress(start_descend, 's')
+screen.onkeyrelease(stop_descend, 's')
+
 draw = turtle.Turtle()
 draw.hideturtle()
 draw.pensize(3)
@@ -50,30 +114,79 @@ other_aircraft.goto(x,y)
 other_aircraft.setheading(angle+180)
 other_aircraft.shape('triangle')
 other_aircraft.showturtle()
-
+other_aircraft.color("black","black")
 k = random.randint(1,2)
 alarm = turtle.Turtle()
 alarm.hideturtle()
 alarm.penup()
 alarm.goto(0,-415)
-for i in range(840) :
-    other_aircraft.forward(0.625)
+
+notice_altitude = turtle.Turtle()
+notice_altitude.hideturtle()
+notice_altitude.penup()
+t = 0
+def other_move() :
+    global alert_active, t
+    other_aircraft.forward(2)
     now_x = other_aircraft.xcor()
     now_y = other_aircraft.ycor()
+    notice_altitude.goto(now_x+15,now_y+15)
+    if t %3 == 0 :
+        notice_altitude.clear()
+        notice_altitude.write("36000ft", align = 'center', font=('Arial', 13, 'bold'))
     d = math.sqrt(now_x**2 + (now_y+100)**2)
+    other_aircraft.clear()
+    other_aircraft.write(str(d), align = 'center', font=('Arial', 13, 'bold'))
     if 100< d <= 150  :
+        alert_active = True
         other_aircraft.shapesize(2)
-        other_aircraft.color("yellow")
+        other_aircraft.color('black','yellow')
         alarm.color('yellow')
         alarm.write("Traffic", align = 'center', font=('Arial', 45, 'bold'))
-    if d <= 100  :
+    elif 10< d <= 100  :
+        alert_active = True
         other_aircraft.shapesize(2)
-        other_aircraft.color("red")
+        other_aircraft.color("black","red")
         other_aircraft.shape("square")
         alarm.clear()
         alarm.color('red')
-        if k ==1 :
-            alarm.write("Climb", align = 'center', font=('Arial', 45, 'bold'))
-        else :
-            alarm.write("Descend", align = 'center', font=('Arial', 45, 'bold'))
+        if k == 1:
+            alarm.write("Climb", align='center', font=('Arial', 45, 'bold'))
+        else:
+            alarm.write("Descend", align='center', font=('Arial', 45, 'bold'))
+    elif d <= 10:
+        if k == 1:
+            if altitude < 36500:
+                delete_all()
+                turtle11 = turtle.Turtle()
+                turtle11.hideturtle()
+                turtle11.color("red")
+                turtle11.write("Crash!", align='center', font=('Arial', 250, 'bold'))
+                exit()
+            else:
+                alarm.clear()
+        elif k == 2:
+            if altitude > 35500:
+                delete_all()
+                turtle11 = turtle.Turtle()
+                turtle11.hideturtle()
+                turtle11.color("red")
+                turtle11.write("Crash!", align='center', font=('Arial', 250, 'bold'))
+                exit()
+            else:
+                alarm.clear()
+    else:
+        alert_active = False
+        other_aircraft.shapesize(1)
+        other_aircraft.color('black', 'black')
+        other_aircraft.shape('triangle')
+        alarm.clear()
+
+    t += 1
+    screen.ontimer(other_move, 50)
+
+climb()
+descend()
+other_move()
+
 turtle.done()
