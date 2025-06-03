@@ -4,16 +4,30 @@ import random
 screen = turtle.Screen()
 screen.setup(1000, 800)
 screen.bgcolor('light steel blue')
-screen.title("TCAS 레이더")
+screen.title("TCAS Rader")
 
 TCAS_off = False
 
-def delete_all():
-    altitude_display.clear()
+
+
+
+altitude_display = turtle.Turtle()
+altitude_display.hideturtle()
+altitude_display.penup()
+altitude_display.goto(450, -370)
+altitude = 36000
+if not TCAS_off :
+    altitude_display.write("Altitude = 36000ft", align = 'center', font=('Arial', 20, 'bold'))
+alert_active = False
+up = False
+down = False
+
+def del_all() :
+    altitude_display.color("orange")
     my_aircraft.clear()
     alarm.clear()
     draw.clear()
-    notice_altitude.clear()
+    notice_altitude.color("orange")
     other_aircraft.clear()
     altitude_display.hideturtle()
     my_aircraft.hideturtle()
@@ -22,19 +36,10 @@ def delete_all():
     notice_altitude.hideturtle()
     other_aircraft.hideturtle()
 
-altitude_display = turtle.Turtle()
-altitude_display.hideturtle()
-altitude_display.penup()
-altitude_display.goto(450, -370)
-altitude = 36000
-altitude_display.write("Altitude = 36000ft", align = 'center', font=('Arial', 20, 'bold'))
-alert_active = False
-up = False
-down = False
 def climb() :
     global altitude
     if alert_active and up:
-        altitude += 30
+        altitude += 50
     altitude_display.clear()
     altitude_display.write(f"Altitude: {altitude} ft", align="center", font=("Arial", 16, "bold"))
     screen.ontimer(climb, 100)
@@ -42,7 +47,7 @@ def climb() :
 def descend() :
     global altitude
     if alert_active and down:
-        altitude -= 30
+        altitude -= 50
     altitude_display.clear()
     altitude_display.write(f"Altitude: {altitude} ft", align="center", font=("Arial", 16, "bold"))
     screen.ontimer(descend, 100)
@@ -127,25 +132,27 @@ notice_altitude.hideturtle()
 notice_altitude.penup()
 t = 0
 def other_move() :
-    global alert_active, t, TCAS_off
+    global alert_active, t, TCAS_off, d
     other_aircraft.forward(5)
     now_x = other_aircraft.xcor()
     now_y = other_aircraft.ycor()
-    notice_altitude.goto(now_x+15,now_y+15)
-    if t %3 == 0 :
+    d = math.sqrt(now_x ** 2 + (now_y + 100) ** 2)
+    notice_altitude.clear()
+    notice_altitude.goto(now_x + 15, now_y + 15)
+    notice_altitude.write("36000ft", align='center', font=('Arial', 13, 'bold'))
+    if t % 2 ==0 :
         notice_altitude.clear()
-        notice_altitude.write("36000ft", align = 'center', font=('Arial', 13, 'bold'))
-    d = math.sqrt(now_x**2 + (now_y+100)**2)
-    other_aircraft.clear()
-    if 100< d <= 150  :
-        if not TCAS_off :
+        notice_altitude.goto(now_x + 15, now_y + 15)
+        notice_altitude.write("36000ft", align='center', font=('Arial', 13, 'bold'))
+        other_aircraft.clear()
+    if not TCAS_off :
+        if 100< d <= 150  :
             alert_active = True
             other_aircraft.shapesize(2)
             other_aircraft.color('black','yellow')
             alarm.color('yellow')
             alarm.write("Traffic", align = 'center', font=('Arial', 45, 'bold'))
-    elif 10< d <= 100  :
-        if not TCAS_off :
+        elif 10< d <= 100  :
             alert_active = True
             screen.bgcolor('orange')
             other_aircraft.shapesize(2)
@@ -157,16 +164,22 @@ def other_move() :
                 alarm.write("Climb", align='center', font=('Arial', 45, 'bold'))
             else:
                 alarm.write("Descend", align='center', font=('Arial', 45, 'bold'))
-    elif d <= 10:
-        if not TCAS_off :
+        elif d <= 10:
             if k == 1:
-                if altitude < 36500:
-                    delete_all()
+                if 35000 <altitude < 37000:
+                    TCAS_off = True
+                    del_all()
                     turtle11 = turtle.Turtle()
                     turtle11.hideturtle()
                     turtle11.color("red")
                     turtle11.write("Crash!", align='center', font=('Arial', 250, 'bold'))
-                    exit()
+                elif altitude <= 35000 :
+                    TCAS_off = True
+                    del_all()
+                    turtle11 = turtle.Turtle()
+                    turtle11.hideturtle()
+                    turtle11.color("red")
+                    turtle11.write("You Didn't Follow TCAS!",align='center', font=('Arial', 90, 'bold'))
                 else:
                     alarm.clear()
                     alert_active = False
@@ -176,13 +189,19 @@ def other_move() :
                     other_aircraft.color("black")
                     other_aircraft.shape("triangle")
             elif k == 2:
-                if altitude > 35500:
-                    delete_all()
+                if 37000 >altitude > 35000:
+                    del_all()
+                    TCAS_off = True
                     turtle11 = turtle.Turtle()
                     turtle11.hideturtle()
                     turtle11.color("red")
                     turtle11.write("Crash!", align='center', font=('Arial', 250, 'bold'))
-                    exit()
+                elif altitude >= 37000 :
+                    del_all()
+                    turtle11 = turtle.Turtle()
+                    turtle11.hideturtle()
+                    turtle11.color("red")
+                    turtle11.write("You Didn't Follow TCAS!", align='center', font=('Arial', 90, 'bold'))
                 else:
                     alarm.clear()
                     alert_active = False
@@ -200,9 +219,8 @@ def other_move() :
 
     t += 1
     screen.ontimer(other_move, 50)
-
-climb()
-descend()
+if not TCAS_off:
+    climb()
+    descend()
 other_move()
-
 turtle.done()
