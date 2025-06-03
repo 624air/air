@@ -6,6 +6,8 @@ screen.setup(1000, 800)
 screen.bgcolor('light steel blue')
 screen.title("TCAS 레이더")
 
+TCAS_off = False
+
 def delete_all():
     altitude_display.clear()
     my_aircraft.clear()
@@ -125,8 +127,8 @@ notice_altitude.hideturtle()
 notice_altitude.penup()
 t = 0
 def other_move() :
-    global alert_active, t
-    other_aircraft.forward(2)
+    global alert_active, t, TCAS_off
+    other_aircraft.forward(5)
     now_x = other_aircraft.xcor()
     now_y = other_aircraft.ycor()
     notice_altitude.goto(now_x+15,now_y+15)
@@ -136,44 +138,59 @@ def other_move() :
     d = math.sqrt(now_x**2 + (now_y+100)**2)
     other_aircraft.clear()
     if 100< d <= 150  :
-        alert_active = True
-        other_aircraft.shapesize(2)
-        other_aircraft.color('black','yellow')
-        alarm.color('yellow')
-        alarm.write("Traffic", align = 'center', font=('Arial', 45, 'bold'))
+        if not TCAS_off :
+            alert_active = True
+            other_aircraft.shapesize(2)
+            other_aircraft.color('black','yellow')
+            alarm.color('yellow')
+            alarm.write("Traffic", align = 'center', font=('Arial', 45, 'bold'))
     elif 10< d <= 100  :
-        alert_active = True
-        screen.bgcolor('orange')
-        other_aircraft.shapesize(2)
-        other_aircraft.color("black","red")
-        other_aircraft.shape("square")
-        alarm.clear()
-        alarm.color('red')
-        if k == 1:
-            alarm.write("Climb", align='center', font=('Arial', 45, 'bold'))
-        else:
-            alarm.write("Descend", align='center', font=('Arial', 45, 'bold'))
+        if not TCAS_off :
+            alert_active = True
+            screen.bgcolor('orange')
+            other_aircraft.shapesize(2)
+            other_aircraft.color("black","red")
+            other_aircraft.shape("square")
+            alarm.clear()
+            alarm.color('red')
+            if k == 1:
+                alarm.write("Climb", align='center', font=('Arial', 45, 'bold'))
+            else:
+                alarm.write("Descend", align='center', font=('Arial', 45, 'bold'))
     elif d <= 10:
-        if k == 1:
-            if altitude < 36500:
-                delete_all()
-                turtle11 = turtle.Turtle()
-                turtle11.hideturtle()
-                turtle11.color("red")
-                turtle11.write("Crash!", align='center', font=('Arial', 250, 'bold'))
-                exit()
-            else:
-                alarm.clear()
-        elif k == 2:
-            if altitude > 35500:
-                delete_all()
-                turtle11 = turtle.Turtle()
-                turtle11.hideturtle()
-                turtle11.color("red")
-                turtle11.write("Crash!", align='center', font=('Arial', 250, 'bold'))
-                exit()
-            else:
-                alarm.clear()
+        if not TCAS_off :
+            if k == 1:
+                if altitude < 36500:
+                    delete_all()
+                    turtle11 = turtle.Turtle()
+                    turtle11.hideturtle()
+                    turtle11.color("red")
+                    turtle11.write("Crash!", align='center', font=('Arial', 250, 'bold'))
+                    exit()
+                else:
+                    alarm.clear()
+                    alert_active = False
+                    screen.bgcolor('light steel blue')
+                    TCAS_off = True
+                    other_aircraft.shapesize(2)
+                    other_aircraft.color("black")
+                    other_aircraft.shape("triangle")
+            elif k == 2:
+                if altitude > 35500:
+                    delete_all()
+                    turtle11 = turtle.Turtle()
+                    turtle11.hideturtle()
+                    turtle11.color("red")
+                    turtle11.write("Crash!", align='center', font=('Arial', 250, 'bold'))
+                    exit()
+                else:
+                    alarm.clear()
+                    alert_active = False
+                    screen.bgcolor('light steel blue')
+                    TCAS_off = True
+                    other_aircraft.shapesize(2)
+                    other_aircraft.color("black")
+                    other_aircraft.shape("triangle")
     else:
         alert_active = False
         other_aircraft.shapesize(1)
